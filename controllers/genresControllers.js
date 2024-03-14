@@ -9,23 +9,3 @@ export const genres = async (req, res, next) => {
     next(error);
   }
 };
-
-export const someBook = async (req, res, next) => {
-  try {
-    const count = await BookModel.find().estimatedDocumentCount();
-    const random = Math.floor(Math.random() * count) + 1;
-    const book = await BookModel.findOne()
-      .skip(random)
-      .select({
-        title: 1,
-        author: 1,
-        description: 1,
-        avgRating: 1,
-        price: 1,
-        'image.thumbnail': 1,
-      });
-    res.send({ success: true, data: book });
-  } catch (error) {
-    next(error);
-  }
-};
