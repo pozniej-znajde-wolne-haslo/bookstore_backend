@@ -40,7 +40,7 @@ export const validation = [
     if (errors.isEmpty()) {
       next();
     } else {
-      res.status(400).json({ success: false, message: errors });
+      res.status(400).send({ success: false, message: errors });
     }
   },
 ];

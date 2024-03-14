@@ -5,35 +5,35 @@ import ReviewModel from '../models/Review.js';
 import BookModel from '../models/Book.js';
 import OrderModel from '../models/Order.js';
 
-const register = async (req, res, next) => {
+export const register = async (req, res, next) => {
   try {
     const emailCheck = await UserModel.findOne({ email: req.body.email });
     if (emailCheck) {
-      res.status(400).json({
+      res.status(400).send({
         success: false,
         message: {
           errors: [{ path: 'email', msg: 'Email address already in use.' }],
         },
       });
     } else {
-      const hashedPassword = await bcrypt.hash(req.body.password, 10);
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(req.body.password, salt);
       const user = await UserModel.create({
         ...req.body,
         password: hashedPassword,
       });
       const token = jwt.sign(
         { _id: user._id, email: user.email },
-        process.env.TOKEN_KEY,
-        { issuer: 'Zett' }
+        process.env.JWT_SECRET
       );
-      res.header('token', token).json({ success: true, data: user });
+      res.header('token', token).send({ success: true, data: user });
     }
   } catch (error) {
     next(error);
   }
 };
 
-const login = async (req, res, next) => {
+export const login = async (req, res, next) => {
   try {
     const user = await UserModel.findOne({ email: req.body.email }).select({
       'image.fileName': 0,
@@ -44,18 +44,18 @@ const login = async (req, res, next) => {
       if (password) {
         const token = jwt.sign(
           { _id: user._id, email: user.email },
-          process.env.TOKEN_KEY,
-          { issuer: 'Zett' }
+          process.env.JWT_SECRET,
+          { expiresIn: '30d' }
         );
-        res.header('token', token).json({ success: true, data: user });
+        res.header('token', token).send({ success: true, data: user });
       } else {
-        res.json({
+        res.send({
           success: false,
           message: 'Please make sure your password is correct.',
         });
       }
     } else {
-      res.json({
+      res.send({
         success: false,
         message: 'Please make sure your email is correct.',
       });
@@ -65,7 +65,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const updateUser = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
   try {
     if (req.body?.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -74,7 +74,7 @@ const updateUser = async (req, res, next) => {
         { password: hashedPassword },
         { new: true }
       ).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.json({ success: true, data: user });
+      res.send({ success: true, data: user });
     } else if (req.files?.image?.name) {
       const fileName = Date.now() + '_' + req.files.image.name;
       const data = {
@@ -87,23 +87,23 @@ const updateUser = async (req, res, next) => {
         { image: data },
         { new: true }
       ).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.json({ success: true, data: user });
+      res.send({ success: true, data: user });
     } else {
       const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       }).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.json({ success: true, data: user });
+      res.send({ success: true, data: user });
     }
   } catch (error) {
     next(error);
   }
 };
 
-const authorizedUser = (req, res) => {
-  res.json({ success: true, data: req.user });
+export const authorizedUser = (req, res) => {
+  res.send({ success: true, data: req.user });
 };
 
-const deleteUserById = async (req, res, next) => {
+export const deleteUserById = async (req, res, next) => {
   const userId = req.params.id;
 
   try {
@@ -141,15 +141,13 @@ const deleteUserById = async (req, res, next) => {
     if (!deletedUser) {
       return res
         .status(404)
-        .json({ success: false, message: 'User not found' });
+        .send({ success: false, message: 'User not found' });
     }
 
     res
       .status(200)
-      .json({ success: true, message: 'User deleted successfully' });
+      .send({ success: true, message: 'User deleted successfully' });
   } catch (error) {
     next(error);
   }
 };
-
-export { register, login, updateUser, authorizedUser, deleteUserById };

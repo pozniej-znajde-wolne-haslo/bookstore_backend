@@ -126,7 +126,6 @@ export const deleteReview = async (req, res, next) => {
     const removeReview = await ReviewModel.findByIdAndDelete(req.params.id);
 
     // update the average rating of the book
-    // why isn't reduce working here ??
     const findReviews = await ReviewModel.find({ book: bookId });
     let sumRatings = 0;
     const sumRatingsArray = findReviews.map((i) => (sumRatings += i.rating));
@@ -144,7 +143,6 @@ export const deleteReview = async (req, res, next) => {
     );
 
     const updateUser = await UserModel.updateOne(
-      //
       { reviews: req.params.id },
       {
         $pull: { reviews: req.params.id },

@@ -1,9 +1,7 @@
-const notFound = (req, res) => {
-  res.status(404).json({ success: false, message: 'Page Not Found' });
+export const notFound = (req, res) => {
+  res.status(404).send({ success: false, message: 'Page Not Found' });
 };
 
-const errorStatus = (err, req, res, next) => {
-  res.status(err.status).json({ success: false, message: err.message });
+export const errorStatus = (err, req, res, next) => {
+  res.status(err.status).send({ success: false, message: err.message });
 };
-
-export { notFound, errorStatus };

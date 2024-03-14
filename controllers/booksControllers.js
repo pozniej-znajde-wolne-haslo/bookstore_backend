@@ -2,15 +2,14 @@ import BookModel from '../models/Book.js';
 import GenreModel from '../models/Genre.js';
 import ReviewModel from '../models/Review.js';
 import UserModel from '../models/User.js';
-/* It is a wonderful meditation on history and the paths of connectivity that join all forms of life. The book is moving, surprising and beautifully crafted. One of my favourites by this brilliant writer. */
 
-const createBook = async (req, res, next) => {
+export const createBook = async (req, res, next) => {
   try {
     const fileName = Date.now() + '_' + req.files.image.name;
     const data = {
       title: req.body.title,
       author: req.body.combinedName,
-      year: parseInt(req.body.year),
+      year: req.body.year,
       publisher: req.body.publisher,
       genre: req.body.genre,
       description: req.body.description,
@@ -20,7 +19,7 @@ const createBook = async (req, res, next) => {
       image: {
         fileName: fileName,
         data: req.files.image.data,
-        thumbnail: `${process.env.THUMBNAIL}${fileName}`,
+        thumbnail: `${process.env.BOOK_IMAGE}${fileName}`,
       },
     };
     const book = await BookModel.create(data);
@@ -30,13 +29,13 @@ const createBook = async (req, res, next) => {
       const genre = await GenreModel.create({ genre: req.body.genre });
     }
 
-    res.json({ success: true, message: 'The book was uploaded successfully.' });
+    res.send({ success: true, message: 'The book was uploaded successfully.' });
   } catch (error) {
     next(error);
   }
 };
 
-const genreBook = async (req, res, next) => {
+export const genreBook = async (req, res, next) => {
   try {
     const books = await BookModel.find({ genre: req.body.genre }).select({
       title: 1,
@@ -51,13 +50,13 @@ const genreBook = async (req, res, next) => {
       'image.thumbnail': 1,
       /*  pic: 1, */
     });
-    res.json({ success: true, data: books });
+    res.send({ success: true, data: books });
   } catch (error) {
     next(error);
   }
 };
 
-const getAllBooks = async (req, res, next) => {
+export const getAllBooks = async (req, res, next) => {
   try {
     const books = await BookModel.find().select({
       title: 1,
@@ -72,13 +71,13 @@ const getAllBooks = async (req, res, next) => {
       'image.thumbnail': 1,
       /* pic: 1, */
     });
-    res.json({ success: true, data: books });
+    res.send({ success: true, data: books });
   } catch (error) {
     next(error);
   }
 };
 
-const getBookById = async (req, res, next) => {
+export const getBookById = async (req, res, next) => {
   try {
     const book = await BookModel.findById(req.params.id).select('-reviews');
     res.send({ success: true, data: book });
@@ -87,14 +86,14 @@ const getBookById = async (req, res, next) => {
   }
 };
 
-const updateBook = async (req, res, next) => {
+export const updateBook = async (req, res, next) => {
   try {
     if (req.files?.image?.name) {
       const fileName = Date.now() + '_' + req.files.image.name;
       const data = {
         fileName: fileName,
         data: req.files.image.data,
-        thumbnail: `${process.env.THUMBNAIL}${fileName}`,
+        thumbnail: `${process.env.BOOK_IMAGE}${fileName}`,
       };
       await BookModel.findByIdAndUpdate(
         req.params.id,
@@ -166,13 +165,13 @@ const updateBook = async (req, res, next) => {
       );
     }
 
-    res.json({ success: true, message: 'Book updated successfully.' });
+    res.send({ success: true, message: 'Book updated successfully.' });
   } catch (error) {
     next(error);
   }
 };
 
-const deleteBook = async (req, res, next) => {
+export const deleteBook = async (req, res, next) => {
   try {
     // delete book's reviews and ref's in users' docs:
     const findReviews = await ReviewModel.find({ book: req.params.id });
@@ -196,13 +195,13 @@ const deleteBook = async (req, res, next) => {
     deleteRevDocs(findReviews);
     // delete the book itself:
     await BookModel.findByIdAndDelete(req.params.id);
-    res.json({ success: true, message: 'The book was successfully deleted.' });
+    res.send({ success: true, message: 'The book was successfully deleted.' });
   } catch (error) {
     next(error);
   }
 };
 
-const searchBook = async (req, res, next) => {
+export const searchBook = async (req, res, next) => {
   try {
     const unPlused = req.params.regex.replaceAll('+', ' ');
     const book = await BookModel.find({
@@ -211,18 +210,8 @@ const searchBook = async (req, res, next) => {
         { author: { $regex: unPlused, $options: 'i' } },
       ],
     });
-    res.json({ success: true, data: book });
+    res.send({ success: true, data: book });
   } catch (error) {
     next(error);
   }
-};
-
-export {
-  createBook,
-  genreBook,
-  getAllBooks,
-  searchBook,
-  updateBook,
-  deleteBook,
-  getBookById,
 };

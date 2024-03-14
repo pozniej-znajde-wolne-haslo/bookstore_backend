@@ -14,7 +14,7 @@ import { role } from '../middleware/role.js';
 
 const routes = Router();
 
-routes.post('/book', authorization, role, createBook);
+routes.post('/new', authorization, role, createBook);
 routes.post('/genre', genreBook);
 routes.get('/all', getAllBooks);
 routes.get('/:id', getBookById);
