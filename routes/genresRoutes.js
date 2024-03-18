@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { genres, someBook } from '../controllers/genresControllers.js';
+import { genres } from '../controllers/genresControllers.js';
 
 const routes = Router();
 

@@ -5,6 +5,16 @@ import ReviewModel from '../models/Review.js';
 import BookModel from '../models/Book.js';
 import OrderModel from '../models/Order.js';
 
+export const getUser = async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.params.id);
+
+    res.send({ success: true, data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const register = async (req, res, next) => {
   try {
     const emailCheck = await UserModel.findOne({ email: req.body.email });
@@ -51,13 +61,13 @@ export const login = async (req, res, next) => {
       } else {
         res.send({
           success: false,
-          message: 'Please make sure your password is correct.',
+          message: 'Please make sure your password is correct',
         });
       }
     } else {
       res.send({
         success: false,
-        message: 'Please make sure your email is correct.',
+        message: 'Please make sure your email is correct',
       });
     }
   } catch (error) {
@@ -65,17 +75,89 @@ export const login = async (req, res, next) => {
   }
 };
 
+export const update = async (req, res, next) => {
+  try {
+    /* const user = await UserModel.findByIdAndUpdate(
+      req.params.id,
+      { address: req.body.address },
+      { new: true }
+    ); */
+
+    if (req.files?.image?.name) {
+      const fileName = Date.now() + '_' + req.files.image.name;
+      const data = {
+        fileName: fileName,
+        data: req.files.image.data,
+        thumbnail: `${process.env.PROFILE_IMAGE}${fileName}`,
+      };
+      const x = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { image: data },
+        { new: true }
+      ); /* .select({ 'image.fileName': 0, 'image.data': 0 }) */
+      /* res.send({ success: true, data: user }); */
+      res.send({ success: true, data: x });
+    }
+    if (req.body?.firstName) {
+      // do I need '!== '' '??
+      const x = await UserModel.findByIdAndUpdate(
+        req.params._id,
+        { firstName: req.body.firstName },
+        { new: true }
+      );
+      res.send({ success: true, data: x });
+    }
+
+    if (req.body?.lastName) {
+      const x = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { lastName: req.body.lastName },
+        { new: true }
+      );
+      res.send({ success: true, data: x });
+    }
+
+    if (req.body?.email) {
+      const x = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { email: req.body.email },
+        { new: true }
+      );
+      res.send({ success: true, data: x });
+    }
+
+    if (req.body?.password) {
+      const x = await UserModel.findByIdAndUpdate(
+        req.params.id,
+        { password: req.body.password },
+        { new: true }
+      );
+      res.send({ success: true, data: x });
+    }
+
+    if (req.body?.address) {
+      const x = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+      res.send({ success: true, data: x });
+    }
+    //res.send({ success: true, message: 'yes' });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateUser = async (req, res, next) => {
   try {
-    if (req.body?.password) {
+    /* if (req.body?.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const user = await UserModel.findByIdAndUpdate(
         req.params.id,
         { password: hashedPassword },
         { new: true }
       ).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.send({ success: true, data: user });
-    } else if (req.files?.image?.name) {
+      //res.send({ success: true, data: user });
+    } else */ if (req.files?.image?.name) {
       const fileName = Date.now() + '_' + req.files.image.name;
       const data = {
         fileName: fileName,
@@ -87,13 +169,16 @@ export const updateUser = async (req, res, next) => {
         { image: data },
         { new: true }
       ).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.send({ success: true, data: user });
+      // res.send({ success: true, data: user });
     } else {
       const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
       }).select({ 'image.fileName': 0, 'image.data': 0 });
-      res.send({ success: true, data: user });
+      //res.send({ success: true, data: user });
     }
+
+    const user = await UserModel.findById(req.params.id);
+    res.send({ success: true, data: user });
   } catch (error) {
     next(error);
   }
@@ -146,7 +231,7 @@ export const deleteUserById = async (req, res, next) => {
 
     res
       .status(200)
-      .send({ success: true, message: 'User deleted successfully' });
+      .send({ success: true, message: 'Account deleted successfully!' });
   } catch (error) {
     next(error);
   }
