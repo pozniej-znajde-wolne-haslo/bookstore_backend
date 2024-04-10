@@ -29,7 +29,7 @@ export const createBook = async (req, res, next) => {
       const genre = await GenreModel.create({ genre: req.body.genre });
     }
 
-    res.send({ success: true, message: 'The book was uploaded successfully.' });
+    res.send({ success: true, message: 'The book was uploaded successfully' });
   } catch (error) {
     next(error);
   }
@@ -48,7 +48,6 @@ export const genreBook = async (req, res, next) => {
       price: 1,
       ISBN: 1,
       'image.thumbnail': 1,
-      /*  pic: 1, */
     });
     res.send({ success: true, data: books });
   } catch (error) {
@@ -69,7 +68,6 @@ export const getAllBooks = async (req, res, next) => {
       price: 1,
       ISBN: 1,
       'image.thumbnail': 1,
-      /* pic: 1, */
     });
     res.send({ success: true, data: books });
   } catch (error) {
@@ -165,7 +163,7 @@ export const updateBook = async (req, res, next) => {
       );
     }
 
-    res.send({ success: true, message: 'Book updated successfully.' });
+    res.send({ success: true, message: 'Book updated successfully' });
   } catch (error) {
     next(error);
   }
@@ -195,7 +193,7 @@ export const deleteBook = async (req, res, next) => {
     deleteRevDocs(findReviews);
     // delete the book itself:
     await BookModel.findByIdAndDelete(req.params.id);
-    res.send({ success: true, message: 'The book was successfully deleted.' });
+    res.send({ success: true, message: 'The book was successfully deleted' });
   } catch (error) {
     next(error);
   }
@@ -206,7 +204,7 @@ export const searchBook = async (req, res, next) => {
     const unPlused = req.params.regex.replaceAll('+', ' ');
     const book = await BookModel.find({
       $or: [
-        { title: { $regex: unPlused, $options: 'i' } }, //{ $regex: unPlused }
+        { title: { $regex: unPlused, $options: 'i' } },
         { author: { $regex: unPlused, $options: 'i' } },
       ],
     });

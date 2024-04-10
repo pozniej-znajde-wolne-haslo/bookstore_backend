@@ -37,34 +37,3 @@ app.use(notFound);
 app.use(errorStatus);
 
 app.listen(PORT, () => console.log('the server is running on port', PORT));
-
-/* gordon
-UQ88fZx9gdpL
-
-samuel
-ErfpCBA576CTgaye
-
-anuch cluster0 new password
-h1YQKZnStIRADiFJ
-
-max
-abc123Kf
-
-devs
-vmizonvIaKZCllYl
-
-logos database cluster logos
-Yxi2G0euSgJnEibN
-
-ania inn logos cluster:
-A2gGfRWzNxu4Qu00
-*/
-
-/* 
-PORT = 8000
-HOST = http://localhost:5173    
-THUMBNAIL = https://logos-bookstore.onrender.com/api/books/image/   
-TOKEN_KEY = sdf4kdo3o2l   
-DATABASE = mongodb+srv://anuch:j0iLuClecIyE2Iy9@cluster0.4wuv4h7.mongodb.net/final-project_bookstore
-PROFILE_IMAGE = https://logos-bookstore.onrender.com/api/user/image/
-*/

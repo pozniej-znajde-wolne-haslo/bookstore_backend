@@ -6,7 +6,6 @@ import {
   register,
   updateUser,
   deleteUserById,
-  update,
 } from '../controllers/userControllers.js';
 import { validation } from '../middleware/validation.js';
 import { authorization } from '../middleware/authorization.js';
@@ -17,7 +16,7 @@ const routes = Router();
 routes.get('/:id', getUser);
 routes.post('/register', validation, register);
 routes.post('/login', login);
-routes.patch('/update/:id', /*  authorization, */ /* updateUser */ update);
+routes.patch('/update/:id', authorization, updateUser);
 routes.get('/image/:fileName', streamProfileImage);
 routes.delete('/delete/:id', authorization, deleteUserById);
 

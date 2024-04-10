@@ -13,18 +13,6 @@ export const getAllReviews = async (req, res, next) => {
   }
 };
 
-// do we need this one?
-export const getSingleReview = async (req, res, next) => {
-  try {
-    const showOneReview = await ReviewModel.findById(req.params.id)
-      .populate('book', 'title')
-      .populate('userId', 'firstName');
-    res.send({ success: true, data: showOneReview });
-  } catch (error) {
-    next(error);
-  }
-};
-
 export const getReviewsByUserId = async (req, res, next) => {
   try {
     const getReviews = await ReviewModel.find({

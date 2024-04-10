@@ -9,7 +9,7 @@ export const createOrder = async (req, res, next) => {
     const user = await UserModel.findByIdAndUpdate(req.user._id, {
       $push: { orders: order._id },
     });
-    res.send({ success: true, message: 'Your order was placed.' });
+    res.send({ success: true, message: 'Your order has been placed' });
   } catch (error) {
     next(error);
   }
@@ -32,20 +32,24 @@ export const deleteOrder = async (req, res, next) => {
     const booksByOrder = await Ordermodel.findOne({
       _id: req.params.id,
     }).select({ books: 1 });
+
     if (booksByOrder) {
       for (let i = 0; i < booksByOrder.books.length; i++) {
         const reviewByUser = await ReviewModel.findOne({
           book: booksByOrder.books[i],
           userId: req.user._id,
         });
+
         if (reviewByUser) {
           const deleteReview = await ReviewModel.deleteOne({
             book: booksByOrder.books[i],
             userId: req.user._id,
           });
+
           const findReviews = await ReviewModel.find({
             book: booksByOrder.books[i],
           });
+
           let sumRatings = 0;
           const sumRatingsArray = findReviews.map(
             (item) => (sumRatings += item.rating)
@@ -55,6 +59,7 @@ export const deleteOrder = async (req, res, next) => {
                 .toFixed(1)
                 .replace(/\.0+$/, '')
             : 0;
+
           const findBook = await BookModel.findByIdAndUpdate(
             booksByOrder.books[i],
             { avgRating: average, $pull: { reviews: reviewByUser._id } },
@@ -70,10 +75,12 @@ export const deleteOrder = async (req, res, next) => {
       { new: true }
     );
     await Ordermodel.findByIdAndDelete(req.params.id);
+
     const order = await Ordermodel.find({ userId: req.user._id }).populate(
       'books',
       { title: 1, author: 1, price: 1, 'image.thumbnail': 1 }
     );
+
     res.send({ success: true, data: order });
   } catch (error) {
     next(error);
@@ -86,21 +93,26 @@ export const deleteItem = async (req, res, next) => {
       book: req.params.id,
       userId: req.user._id,
     });
+
     if (reviewByUser) {
       const deleteReview = await ReviewModel.deleteOne({
         book: req.params.id,
         userId: req.user._id,
       });
+
       const findReviews = await ReviewModel.find({ book: req.params.id });
+
       let sumRatings = 0;
       const sumRatingsArray = findReviews.map(
         (item) => (sumRatings += item.rating)
       );
+
       const average = sumRatingsArray.at(-1)
         ? (sumRatingsArray.at(-1) / findReviews.length)
             .toFixed(1)
             .replace(/\.0+$/, '')
         : 0;
+
       const findBook = await BookModel.findByIdAndUpdate(
         req.params.id,
         { avgRating: average, $pull: { reviews: reviewByUser._id } },
@@ -111,6 +123,7 @@ export const deleteItem = async (req, res, next) => {
     const orderById = await Ordermodel.findOne({ _id: req.body.id });
     const index = orderById.books.indexOf(req.params.id);
     const quantity = orderById.quantity[index];
+
     if (orderById.books.length === 1) {
       const user = await UserModel.findByIdAndUpdate(
         req.user._id,
@@ -125,10 +138,12 @@ export const deleteItem = async (req, res, next) => {
         { new: true }
       );
     }
+
     const order = await Ordermodel.find({ userId: req.user._id }).populate(
       'books',
       { title: 1, author: 1, price: 1, 'image.thumbnail': 1 }
     );
+
     res.send({ success: true, data: order });
   } catch (error) {
     next(error);
@@ -160,11 +175,13 @@ export const updateItem = async (req, res, next) => {
       { $pull: { books: req.body.book, quantity: quantity } },
       { new: true }
     );
+
     const updatedOrder2 = await Ordermodel.findOneAndUpdate(
       { _id: req.params.id },
       { $push: { books: req.body.book, quantity: newQty } },
       { new: true }
     );
+
     const updatedOrder3 = await Ordermodel.findOneAndUpdate(
       { _id: req.params.id },
       { totalPrice: newTotalPrice },
@@ -175,6 +192,7 @@ export const updateItem = async (req, res, next) => {
       'books',
       { title: 1, author: 1, price: 1, 'image.thumbnail': 1 }
     );
+
     res.send({ success: true, data: userOrders });
   } catch (error) {
     next(error);

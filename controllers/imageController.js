@@ -1,6 +1,6 @@
 import BookModel from '../models/Book.js';
-import stream from 'stream';
 import UserModel from '../models/User.js';
+import stream from 'stream';
 
 export const streamBookImage = async (req, res, next) => {
   try {

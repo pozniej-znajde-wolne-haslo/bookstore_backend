@@ -51,12 +51,14 @@ export const login = async (req, res, next) => {
     });
     if (user) {
       const password = await bcrypt.compare(req.body.password, user.password);
+
       if (password) {
         const token = jwt.sign(
           { _id: user._id, email: user.email },
           process.env.JWT_SECRET,
           { expiresIn: '30d' }
         );
+
         res.header('token', token).send({ success: true, data: user });
       } else {
         res.send({
@@ -75,14 +77,8 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const update = async (req, res, next) => {
+export const updateUser = async (req, res, next) => {
   try {
-    /* const user = await UserModel.findByIdAndUpdate(
-      req.params.id,
-      { address: req.body.address },
-      { new: true }
-    ); */
-
     if (req.files?.image?.name) {
       const fileName = Date.now() + '_' + req.files.image.name;
       const data = {
@@ -93,16 +89,6 @@ export const update = async (req, res, next) => {
       const x = await UserModel.findByIdAndUpdate(
         req.params.id,
         { image: data },
-        { new: true }
-      ); /* .select({ 'image.fileName': 0, 'image.data': 0 }) */
-      /* res.send({ success: true, data: user }); */
-      res.send({ success: true, data: x });
-    }
-    if (req.body?.firstName) {
-      // do I need '!== '' '??
-      const x = await UserModel.findByIdAndUpdate(
-        req.params._id,
-        { firstName: req.body.firstName },
         { new: true }
       );
       res.send({ success: true, data: x });
@@ -127,58 +113,23 @@ export const update = async (req, res, next) => {
     }
 
     if (req.body?.password) {
-      const x = await UserModel.findByIdAndUpdate(
-        req.params.id,
-        { password: req.body.password },
-        { new: true }
-      );
-      res.send({ success: true, data: x });
-    }
-
-    if (req.body?.address) {
-      const x = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-      });
-      res.send({ success: true, data: x });
-    }
-    //res.send({ success: true, message: 'yes' });
-  } catch (error) {
-    next(error);
-  }
-};
-
-export const updateUser = async (req, res, next) => {
-  try {
-    /* if (req.body?.password) {
       const hashedPassword = await bcrypt.hash(req.body.password, 10);
       const user = await UserModel.findByIdAndUpdate(
         req.params.id,
         { password: hashedPassword },
         { new: true }
       ).select({ 'image.fileName': 0, 'image.data': 0 });
-      //res.send({ success: true, data: user });
-    } else */ if (req.files?.image?.name) {
-      const fileName = Date.now() + '_' + req.files.image.name;
-      const data = {
-        fileName: fileName,
-        data: req.files.image.data,
-        thumbnail: `${process.env.PROFILE_IMAGE}${fileName}`,
-      };
-      const user = await UserModel.findByIdAndUpdate(
-        req.params.id,
-        { image: data },
-        { new: true }
-      ).select({ 'image.fileName': 0, 'image.data': 0 });
-      // res.send({ success: true, data: user });
-    } else {
-      const user = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-      }).select({ 'image.fileName': 0, 'image.data': 0 });
-      //res.send({ success: true, data: user });
+
+      res.send({ success: true, data: user });
     }
 
-    const user = await UserModel.findById(req.params.id);
-    res.send({ success: true, data: user });
+    if (req.body?.address) {
+      const x = await UserModel.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+      });
+
+      res.send({ success: true, data: x });
+    }
   } catch (error) {
     next(error);
   }

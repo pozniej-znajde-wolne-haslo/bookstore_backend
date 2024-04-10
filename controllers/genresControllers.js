@@ -1,4 +1,3 @@
-// import BookModel from '../models/Book.js';
 import GenreModel from '../models/Genre.js';
 
 export const genres = async (req, res, next) => {
