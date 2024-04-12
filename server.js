@@ -36,4 +36,4 @@ app.use('/api/orders', orders);
 app.use(notFound);
 app.use(errorStatus);
 
-/* app.listen(PORT, () => console.log('the server is running on port', PORT)); */
+app.listen(PORT, () => console.log('the server is running on port', PORT));
