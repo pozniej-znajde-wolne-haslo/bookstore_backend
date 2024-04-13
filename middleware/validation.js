@@ -27,7 +27,7 @@ export const validation = [
     .trim()
     .escape()
     .isAlpha()
-    .withMessage('Please make sure your only use letters'),
+    .withMessage('Please make sure you only use letters'),
   body('lastName')
     .exists()
     .withMessage('Please make sure to include your last name')

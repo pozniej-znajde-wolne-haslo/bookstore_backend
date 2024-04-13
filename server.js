@@ -1,7 +1,8 @@
+/* mongodb+srv://ania123:ania123@bookstorecluster.xt96gth.mongodb.net/booksy */
+
 import express from 'express';
 import dotenv from 'dotenv';
-/* import cors from 'cors'; */
-import fileUpload from 'express-fileupload';
+/* import cors from 'cors' */ import fileUpload from 'express-fileupload';
 import morgan from 'morgan';
 import { database } from './database/database.js';
 import { errorStatus, notFound } from './middleware/errors.js';
@@ -16,8 +17,8 @@ const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT;
-/* 
-app.use(cors({ origin: `${process.env.HOST}`, exposedHeaders: ['token'] })); */
+
+/* app.use(cors({ origin: `${process.env.HOST}`, exposedHeaders: ['token'] })); */
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true }));
 /* app.use(express.static('./views/public')); */
