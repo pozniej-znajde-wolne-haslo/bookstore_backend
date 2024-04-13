@@ -1,5 +1,3 @@
-/* mongodb+srv://ania123:ania123@bookstorecluster.xt96gth.mongodb.net/booksy */
-
 import express from 'express';
 import dotenv from 'dotenv';
 /* import cors from 'cors' */ import fileUpload from 'express-fileupload';
